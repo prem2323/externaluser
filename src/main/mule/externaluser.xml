@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider"
+	xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
+	xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd
+http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d32f2e58-fc37-459c-879c-d2a8fb8db96e" >
+		<http:request-connection host="training4-american-ws-kat.us-e2.cloudhub.io" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2e785f69-590b-42f7-857e-075a29b01ce8" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="1ffb2046-a854-4cbc-845a-f64ba6f2e4cd" >
+		<db:my-sql-connection host="us-cdbr-iron-east-02.cleardb.net" port="3306" user="b1acf333025633" password="222069be" database="ad_80d949664e73452" />
+	</db:config>
+	<!-- <http:request-config name="HTTP_Request_configuration_google_drive" doc:name="HTTP Request configuration" doc:id="46550d94-e9f7-4569-a0a1-d1c86fb12cd0" basePath="/drive/v3" >
+		<http:request-connection protocol="HTTPS" host="www.googleapis.com" port="443" >
+			<http:authentication >
+				<oauth:authorization-code-grant-type externalCallbackUrl="http://localhost:8082/callback" localAuthorizationUrl="http://localhost:8082/login" authorizationUrl="https://accounts.google.com/o/oauth2/v2/auth" clientId="503593609943-tjiqnoh1sugir7qeitc04u2mtu3i48n0.apps.googleusercontent.com" clientSecret="iLH7Z7-3WxgzFULpe-lWnMnW" tokenUrl="https://www.googleapis.com/oauth2/v4/token" scopes="https://www.googleapis.com/auth/drive"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config> -->
+	<!-- <flow name="flow1" doc:id="c7d95b3e-224f-4e80-b15d-8c9a3be06fdc" >
+		<http:request method="GET" doc:name="Request" doc:id="2fe3beb8-9251-4a40-899b-b3262deb4878" config-ref="HTTP_Request_configuration_google_drive" path="/files">
+			<http:headers><![CDATA[#[output application/java
+
+{
+	"authorization" : attributes.headers.authorization
+}]]]></http:headers>
+			<http:headers ><![CDATA[#[output application/java
+
+{
+	"authorization" : attributes.headers.authorization
+}]]]></http:headers>
+		</http:request>
+		<db:select doc:name="Select" doc:id="a0d74be5-edf2-458e-96d0-5997eea122c6" config-ref="Database_Config">
+			<db:sql>select * from external_users ;</db:sql>
+		</db:select>
+		<validation:is-not-null doc:name="Is not null" doc:id="5211c632-3943-4d78-8a4a-b9e64ac67ea5" value="#[payload]" />
+		<http:request method="GET" doc:name="Request" doc:id="d7605f07-c3fa-4374-953d-0c3b09991e2d" config-ref="HTTP_Request_configuration" path="api/flights" />
+	</flow> -->
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="cf7698eb-fd79-4442-ac7e-6bcc24f87c91" basePath="/api">
+		<http:request-connection host="training4-american-ws-kati.us-e2.cloudhub.io">
+			<http:authentication >
+				<oauth:authorization-code-grant-type externalCallbackUrl="http://localhost:8082/callback" localAuthorizationUrl="https://localhost:8082/login" authorizationUrl="https://github.com/login/oauth/authorize" clientId="66fce4a411600652ed62" clientSecret="8fff1582085849c24d5c798db9edf08ecdb5b45c" scopes="repo,gist,user,user:email" tokenUrl="https://github.com/login/oauth/access_token" localCallbackUrl="http://localhost:8082/callback"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+<!-- 	<oauth2-provider:config name="OAuth2_Provider_Config" doc:name="OAuth2 Provider Config" doc:id="41fe8789-0a0d-4d23-81c0-fa353171427c" listenerConfig="http://localhost:8082/login" />
+ -->	<flow name="externaluserFlow" doc:id="d237742c-6324-4cc1-bbe1-a1bd529cbf7e" >
+		
+		<http:listener doc:name="Listener" doc:id="0331f8bc-6f74-422b-873d-4ae7568fa1cb" config-ref="HTTP_Listener_config" path="/"/>
+		
+		<parse-template doc:name="Parse Template" doc:id="6897c99a-b519-474e-a5c2-0024d7ad4ac7" location="index.html"/>
+	</flow>
+	<flow name="externaluserFlow1" doc:id="919b9eb8-03b4-4ed3-ad3c-2fe7415adae3" >
+		<http:listener doc:name="Listener" doc:id="c0be9f24-f028-474b-9c79-c276860dd754" config-ref="HTTP_Listener_config" path="/logindetails"/>
+		<db:select doc:name="Select" doc:id="bf634c36-5bd7-408c-98ad-b44f3b1e4ed4" config-ref="Database_Config">
+			<db:sql>select * from external_users where user_name = :username and pssd =:password;</db:sql>
+			<db:input-parameters ><![CDATA[#[{username: payload.uname, password: payload.psw}]]]></db:input-parameters>
+		
+</db:select>
+		<validation:validate-size doc:name="Validate size" doc:id="a88cd8f7-cd02-4cbc-900f-9ea3317aa049" value="#[payload]" min="1" message="User details not found!! Please contact admin" />
+		<http:request method="GET" doc:name="Request" doc:id="29fb2f62-8cb0-470d-a397-48b600f80be6" config-ref="HTTP_Request_configuration1" path="/flights" />
+		<parse-template doc:name="Parse Template" doc:id="66f34b13-ad7c-46ae-8696-94ea447f826a" location="response.html"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5814b13d-3c64-43dd-a21d-1663cc16d166" message="#[payload]" />
+	</flow>
+</mule>
